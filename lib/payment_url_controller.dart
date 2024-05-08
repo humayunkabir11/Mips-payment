@@ -1,9 +1,19 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 class PaymentUrlClass {
-static String  finalPaymentUrl ="";
-   Future<void> fetchPaymentUrl() async {
+
+  // Generate unique ID for id_order
+  String generateOrderId() {
+    // Use UUID package to generate a unique ID
+    var uuid = const Uuid();
+   // print(uuid.v4);
+    return uuid.v4(); // Generate a version 4 (random) UUID
+  }
+  static String  finalPaymentUrl ="";
+  Future<void> fetchPaymentUrl() async {
+
     Map<String, dynamic> requestBody = {
       "authentify": {
         "id_merchant": "5s0aOiRIH43yqkffzpEbpddlqGzMCoyY",
@@ -12,7 +22,7 @@ static String  finalPaymentUrl ="";
         "operator_password": "NUvxccs0R0rzKPoLlIPeet21rarpX0rk"
       },
       "order": {
-        "id_order": "INV5034",
+        "id_order": generateOrderId(),
         "currency": "MUR",
         "amount": 500
       },
@@ -26,7 +36,7 @@ static String  finalPaymentUrl ="";
       "touchpoint": "native_app"
     };
 
-    print(requestBody);
+    print("=============Body ${requestBody}");
 
     // Make the HTTP POST request to the MIPS API
     final response = await http.post(Uri.parse("https://api.mips.mu/api/load_payment_zone"),
@@ -41,7 +51,6 @@ static String  finalPaymentUrl ="";
     print("=====================++>>> response.body${response.body}");
     print("=====================++>>> response.statusCode${response.statusCode}");
 
-
     // Handle the response
     if (response.statusCode == 200) {
       // Parse the JSON response and extract the payment URL
@@ -49,7 +58,7 @@ static String  finalPaymentUrl ="";
 
       print("=======Url $finalPaymentUrl");
       // Once you have the payment URL, you can load it into the WebView
-     // Refresh the UI to show the WebView
+      // Refresh the UI to show the WebView
     } else {
       // Handle error
     }
